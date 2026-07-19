@@ -98,14 +98,25 @@ class LLMClient:
         """
         headers, url = self._get_headers_and_url(model)
         
+        # Determine actual model name to send to API
+        api_model = model
+        if "api.deepseek.com" in url:
+            if "r1" in model.lower() or "reasoner" in model.lower():
+                api_model = self.config.deepseek_reasoner_model
+            elif "chat" in model.lower() or "v3" in model.lower():
+                api_model = "deepseek-chat"
+
         payload = {
-            "model": model,
+            "model": api_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            "temperature": 0.0,  # Ensure max determinism
         }
+        
+        # Omit temperature for deepseek-reasoner to satisfy DeepSeek API contract
+        if api_model != "deepseek-reasoner" and api_model != self.config.deepseek_reasoner_model:
+            payload["temperature"] = 0.0
 
         # Log request if raw LLM logging is enabled (at DEBUG level)
         if self.config.log_raw_llm:

@@ -75,16 +75,21 @@ chmod +x setup.sh
 ### Environment Settings (`.env`)
 Create a `.env` file in the root directory (automatically copied from `.env.example` by `setup.sh`):
 ```ini
-ACTIONABILITY_MODEL=openrouter/google/gemini-2.5-pro
-CONDENSER_MODEL=openrouter/google/gemini-2.5-flash
-CRITIC_MODEL=openrouter/google/gemini-2.5-pro
-REFLECTOR_MODEL=openrouter/google/gemini-2.5-flash
+ACTIONABILITY_MODEL=deepseek/deepseek-r1
+CONDENSER_MODEL=deepseek/deepseek-r1
+CRITIC_MODEL=google/gemma-3-27b-it
+REFLECTION_MODEL=deepseek/deepseek-r1
 
 OPENROUTER_API_KEY=your_key_here
 EMBED_API_KEY=your_key_here
 
-QDRANT_URL=:memory:
-QDRANT_API_KEY=test_key
+QDRANT_URL=http://localhost:6333
+QDRANT_API_KEY=
+
+# Optional Direct DeepSeek Routing (Bypasses OpenRouter for DeepSeek models)
+DEEPSEEK_API_KEY=your_key_here
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_REASONER_MODEL=deepseek-reasoner
 ```
 
 ---
@@ -93,20 +98,39 @@ QDRANT_API_KEY=test_key
 
 The top-level execution point is `run.py`.
 
+### Connection Probe
+Verify Qdrant connection and inspect collections:
+```bash
+python run.py probe
+```
+
 ### Generate Protocols
 Assess and generate protocols from seeded Keystones:
 ```bash
+# Process all candidates
+python run.py generate
+
+# Process up to 10 candidates
 python run.py generate --limit 10
+
+# Process in dry-run mode (no writes to Qdrant)
+python run.py generate --limit 10 --dry-run
+
+# Run for a specific Keystone ID
+python run.py generate --keystone-id <id>
+
+# Filter by minimum convergence
+python run.py generate --min-convergence 0.80
 ```
 
 ### Classify Only
-Analyze Keystones for actionability suitability without generating drafts:
+Score/classify Keystones for actionability and suitability without generating drafts:
 ```bash
-python run.py classify
+python run.py classify --limit 10 --dry-run
 ```
 
 ### Log Observations
-Log an outcome observation against a protocol:
+Log an outcome observation against an active protocol:
 ```bash
 python run.py log-observation --protocol-id <id> --file path/to/observation.json
 ```
@@ -117,21 +141,58 @@ Trigger LLM reflection on logged observations:
 python run.py reflect --observation-id <id>
 ```
 
-### Export Results
-Export data to static JSON files:
+### List and Inspect Items
+List items stored in Qdrant collections or show details:
 ```bash
-python run.py export --output-dir ./exports
+# List generated protocols (with optional status filter)
+python run.py list protocols
+python run.py list protocols --status approved
+
+# List the Appendix A Refused/Non-Actionable Register
+python run.py list register
+
+# List qualitative reflections and feedback recommendations
+python run.py list feedback
+
+# Show full JSON payload of a specific protocol
+python run.py show protocol <protocol_id>
+
+# Show full JSON payload of a specific reflection
+python run.py show reflection <reflection_id>
+```
+
+### Validate Payloads
+Validate a local JSON payload against Pydantic schemas:
+```bash
+python run.py validate protocol examples/protocol_example.json
+```
+
+### Export Results
+Export collections to static JSON files:
+```bash
+python run.py export protocols --out data/protocols.json
+python run.py export observations --out data/observations.json
+python run.py export reflections --out data/reflections.json
 ```
 
 ### Generate Report Book
 Compile HTML and PDF books summarizing the experimental program:
 ```bash
-python run.py report --output-dir ./reports --pdf
+python run.py report --out data/praxis_book.md --pdf --html
 ```
 
 ---
 
-## 6. Data Collection Descriptions
+## 6. Optional Direct DeepSeek Routing
+When `DEEPSEEK_API_KEY` is provided, Praxis will automatically route DeepSeek models (e.g. models matching `deepseek`) directly to the native DeepSeek API endpoint (`https://api.deepseek.com` by default) instead of routing them through OpenRouter. 
+
+During direct routing, the client automatically handles compatibility layers, including:
+* **Model ID translation:** Converts OpenRouter model names like `deepseek/deepseek-r1` or `deepseek/deepseek-chat` to native API identifiers like `deepseek-reasoner` or `deepseek-chat`.
+* **DeepSeek Contract Compliance:** Omits `temperature` parameter for `deepseek-reasoner` model requests, preventing native DeepSeek API schema validation errors.
+
+---
+
+## 7. Data Collection Descriptions
 
 Praxis manages data across several logical Qdrant collections:
 * **`keystones`**: The input candidate propositions from the Meta-Bridge pipeline.

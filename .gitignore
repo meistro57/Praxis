@@ -1,0 +1,29 @@
+# Environment variables
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+cov.xml
+.ruff_cache/
+
+# Local data and logs
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# Packaging and distribution
+dist/
+build/
+*.egg-info/
+venv/
+.venv/

@@ -1,0 +1,15 @@
+{
+  "id": "ks_observer_state",
+  "concept": "observer state",
+  "statement": "Interpretation is partly constrained by the observer's physiological state.",
+  "one_liner": "State influences interpretation.",
+  "convergence": 0.78,
+  "centrality": 0.84,
+  "coherence": 0.79,
+  "survival": 0.73,
+  "n_sources": 18,
+  "member_reflection_ids": ["r1", "r2"],
+  "source_ids": ["source_a", "source_b"],
+  "critic_verdict": "pass",
+  "model": "gpt-4"
+}

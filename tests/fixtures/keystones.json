@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ks_observer_state",
+    "concept": "observer state",
+    "statement": "Interpretation is partly constrained by the observer's physiological state.",
+    "one_liner": "State influences interpretation.",
+    "convergence": 0.78,
+    "critic_verdict": "pass"
+  },
+  {
+    "id": "ks_cancer_cause",
+    "concept": "cancer causation",
+    "statement": "Illness such as cancer is caused by unexpressed resentment in the mind.",
+    "one_liner": "Resentment causes cancer.",
+    "convergence": 0.88,
+    "critic_verdict": "pass"
+  },
+  {
+    "id": "ks_low_convergence",
+    "concept": "observer state",
+    "statement": "Interpretation is constrained by physiological state.",
+    "one_liner": "State influences interpretation.",
+    "convergence": 0.60,
+    "critic_verdict": "pass"
+  },
+  {
+    "id": "ks_failed_critic",
+    "concept": "observer state",
+    "statement": "State influences interpretation.",
+    "one_liner": "State influences interpretation.",
+    "convergence": 0.80,
+    "critic_verdict": "fail"
+  }
+]

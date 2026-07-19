@@ -1,0 +1,26 @@
+{
+  "observation_id": "d16fd9d6-512b-586b-80a5-f852cc596811",
+  "protocol_id": "c16fd9d6-512b-586b-80a5-f852cc596700",
+  "protocol_version": 1,
+  "keystone_id": "ks_observer_state",
+  "started_at": "2026-07-19T10:05:00Z",
+  "completed_at": "2026-07-19T10:13:00Z",
+  "outcome": "supported",
+  "completion_ratio": 1.0,
+  "measurement_values": {
+    "emotional_intensity": {
+      "before": 7,
+      "after": 4
+    }
+  },
+  "notes": "I noticed that the first interpretation was much more defensive. After three minutes of breathing, the second interpretation was more moderate.",
+  "confounds_observed": ["fatigue"],
+  "adverse_effects": [],
+  "deviations_from_protocol": [],
+  "observer_context": {
+    "self_reported_state": "tired after work",
+    "setting": "home office"
+  },
+  "created_at": "2026-07-19T10:14:00Z",
+  "content_hash": "3df34dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9835"
+}

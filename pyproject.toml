@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov=app --cov-report=term-missing"
+testpaths = [
+    "tests",
+]

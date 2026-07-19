@@ -1,4 +1,5 @@
 # Praxis
+<img width="364" height="389" alt="image" src="https://github.com/user-attachments/assets/7be0e9d4-8058-4314-aac0-80182d1bcd52" />
 
 Praxis is the embodied experiment layer of the Meta-Bridge pipeline. It translates selected, provenance-backed Keystone propositions into minimal, reversible, low-risk practices and records what happens when those propositions encounter lived experience.
 

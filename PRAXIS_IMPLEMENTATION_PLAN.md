@@ -1175,11 +1175,13 @@ python run.py show protocol <protocol_id>
 python run.py validate protocol examples/protocol_example.json
 
 # Log observation
+python run.py log-observation --file examples/observation_example.json
 python run.py log-observation \
   --protocol-id <protocol_id> \
   --file examples/observation_example.json
 
 # Reflect
+python run.py reflect
 python run.py reflect --observation-id <observation_id>
 
 # Feedback

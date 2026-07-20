@@ -84,12 +84,12 @@ def main(args_list: Optional[list[str]] = None) -> None:
 
     # Command: log-observation
     log_parser = subparsers.add_parser("log-observation", help="Submit observation JSON file for a protocol.")
-    log_parser.add_argument("--protocol-id", required=True, help="Target Protocol UUID.")
+    log_parser.add_argument("--protocol-id", help="Target Protocol UUID. Optional, auto-resolved when omitted.")
     log_parser.add_argument("--file", required=True, help="Path to the observation JSON file.")
 
     # Command: reflect
     ref_parser = subparsers.add_parser("reflect", help="Generate qualitative reflection for an observation.")
-    ref_parser.add_argument("--observation-id", required=True, help="Target Observation UUID.")
+    ref_parser.add_argument("--observation-id", help="Target Observation UUID. Optional, auto-resolved when omitted.")
 
     # Command: export
     exp_parser = subparsers.add_parser("export", help="Export a Qdrant collection to a JSON file.")

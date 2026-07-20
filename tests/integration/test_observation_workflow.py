@@ -99,3 +99,74 @@ def test_observation_and_reflection_workflow_success(qdrant_service, seeded_prot
         assert len(reflections) == 1
         ref = reflections[0]
         assert ref["feedback_recommendation"] == "repeated_practical_support"
+
+
+def test_log_observation_uses_protocol_id_from_payload_when_flag_missing(qdrant_service, seeded_protocol, mock_config, tmp_path):
+    obs_file = tmp_path / "obs_auto_protocol.json"
+    obs_data = {
+        "protocol_id": seeded_protocol.protocol_id,
+        "protocol_version": 1,
+        "keystone_id": "ks_1",
+        "outcome": "supported",
+        "completion_ratio": 1.0,
+        "notes": "Logged without CLI protocol flag.",
+        "measurement_values": {},
+        "confounds_observed": [],
+        "adverse_effects": []
+    }
+    with open(obs_file, "w") as f:
+        json.dump(obs_data, f)
+
+    log_workflow = LogObservationWorkflow(mock_config)
+    log_workflow.run(protocol_id=None, file_path=str(obs_file))
+
+    observations = qdrant_service.scroll_collection(mock_config.praxis_observations_collection)
+    assert len(observations) == 1
+    assert observations[0]["protocol_id"] == seeded_protocol.protocol_id
+
+
+def test_reflect_auto_selects_latest_observation(qdrant_service, seeded_protocol, mock_config):
+    from app.services.observation_logger import ObservationLogger
+
+    logger = ObservationLogger(qdrant_service, mock_config)
+    first_obs = logger.log_observation(seeded_protocol.protocol_id, {
+        "protocol_version": 1,
+        "keystone_id": "ks_1",
+        "outcome": "supported",
+        "completion_ratio": 1.0,
+        "notes": "First observation.",
+        "measurement_values": {},
+        "confounds_observed": [],
+        "adverse_effects": [],
+        "completed_at": "2026-07-19T10:10:00Z"
+    })
+    second_obs = logger.log_observation(seeded_protocol.protocol_id, {
+        "protocol_version": 1,
+        "keystone_id": "ks_1",
+        "outcome": "supported",
+        "completion_ratio": 1.0,
+        "notes": "Second observation.",
+        "measurement_values": {},
+        "confounds_observed": [],
+        "adverse_effects": [],
+        "completed_at": "2026-07-19T10:20:00Z"
+    })
+    assert first_obs.observation_id != second_obs.observation_id
+
+    mock_reflection_response = ReflectionResponse(
+        summary="Latest observation selected.",
+        interpretation="Auto mode used newest observation.",
+        feedback_recommendation=FeedbackRecommendation.REPEATED_PRACTICAL_SUPPORT,
+        feedback_reason="Sufficient support.",
+        human_review_required=False
+    )
+
+    with patch("app.services.llm_client.LLMClient.generate_completions") as mock_complete:
+        mock_complete.return_value = mock_reflection_response
+
+        reflect_workflow = ReflectObservationWorkflow(mock_config)
+        reflect_workflow.run(observation_id=None)
+
+    reflections = qdrant_service.scroll_collection(mock_config.praxis_reflections_collection)
+    assert len(reflections) == 1
+    assert reflections[0]["observation_id"] == second_obs.observation_id

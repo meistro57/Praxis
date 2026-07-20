@@ -120,7 +120,9 @@ python run.py classify --limit 10 --dry-run
 ### Log and reflect on observations
 
 ```bash
+python run.py log-observation --file path/to/observation.json
 python run.py log-observation --protocol-id <id> --file path/to/observation.json
+python run.py reflect
 python run.py reflect --observation-id <id>
 ```
 

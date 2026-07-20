@@ -1,33 +1,34 @@
 # Praxis
-<img width="364" height="389" alt="image" src="https://github.com/user-attachments/assets/7be0e9d4-8058-4314-aac0-80182d1bcd52" />
+
+<img width="364" height="389" alt="Praxis project mark" src="https://github.com/user-attachments/assets/7be0e9d4-8058-4314-aac0-80182d1bcd52" />
 
 Praxis is the embodied experiment layer of the Meta-Bridge pipeline. It translates selected, provenance-backed Keystone propositions into minimal, reversible, low-risk practices and records what happens when those propositions encounter lived experience.
 
----
-
-## 1. Project Purpose & Boundary
-
-Praxis bridges theoretical insights and lived observation. Instead of accepting abstract conceptual models at face value, Praxis acts as a compiler that reads Keystone propositions and spits out safe, actionable behavioral protocols.
-
-### What Praxis Does
-* **Filters:** Evaluates incoming propositions against strict domain and risk boundaries.
-* **Classifies:** Scores candidate propositions on actionability, burden, observability, and reversibility.
-* **Drafts:** Translates eligible concepts into step-by-step practical guides.
-* **Reviews:** Validates drafts using a multi-phase safety pipeline (Deterministic Safety + LLM Critic).
-* **Tracks:** Logs participant observations and aggregates feedback.
-* **Reports:** Compiles comprehensive experimental program report books (HTML/PDF/Markdown).
-
-### What Praxis Does NOT Do (Safety Boundary)
-* **No Medical Treatment:** Praxis explicitly excludes medical, therapeutic, diagnostic, or psychiatric interventions.
-* **No Metaphysical Testing:** Praxis will not generate protocols attempting to verify survival of bodily death, remote influence, or non-empirical causal claims.
-* **No Irreversible Actions:** All practices must be fully reversible, low-risk, and limited in scope.
-* **No Canon Mutation:** Praxis records observational data and proposes modifications, but never directly alters or overwrites the foundational canonical models.
+> [!IMPORTANT]
+> Praxis is deliberately calibrated for a low yield: **5–15% approval is healthy**. Safety rejections are a feature, not a bug. Do not lower `MIN_PRAXIS_SUITABILITY`, raise `MAX_ALLOWED_RISK_TIER`, disable `ENFORCE_DOMAIN_PREFILTER`, or soften deterministic safety checks to increase volume.
 
 ---
 
-## 2. Pipeline Architecture
+## What Praxis Does
 
-Below is the conceptual architecture showing how a candidate proposition flows through the Praxis funnel to become an active protocol:
+Praxis bridges theoretical insights and lived observation. It behaves like a careful compiler: read a Keystone proposition, reject anything unsafe or non-actionable, and emit only small, observable, reversible practices.
+
+| Stage | Responsibility |
+| --- | --- |
+| Filter | Apply domain and risk boundaries before any generative step. |
+| Classify | Score actionability, burden, observability, reversibility, and suitability. |
+| Draft | Condense eligible propositions into low-risk practice candidates. |
+| Review | Run deterministic safety checks and an LLM critic gate. |
+| Track | Log participant observations without mutating canonical Keystone records. |
+| Report | Build Markdown, HTML, and PDF programme reports. |
+
+## Safety Boundary
+
+Praxis **does not** generate medical, therapeutic, diagnostic, psychiatric, metaphysical-proof, remote-influence, or irreversible protocols. All approved practices must be limited in scope, observable, reversible, and low risk. Keystone records are canonical inputs and must remain read-only.
+
+---
+
+## Pipeline Architecture
 
 ```mermaid
 graph TD
@@ -46,34 +47,21 @@ graph TD
 
 ---
 
-## 3. Expected Yield and Calibration
+## Quick Start
 
-The Keystone collection consists overwhelmingly of metaphysical propositions about the nature of reality, consciousness, death, and cosmic order. Most of them cannot responsibly become experiments.
+### 1. Create the local environment
 
-> [!IMPORTANT]
-> **Expect an approval rate in the range of 5–15% of eligible Keystones.** A run over several hundred Keystones producing twenty to forty approved protocols is the system working correctly, not failing.
->
-> A low approval count is never grounds to lower `MIN_PRAXIS_SUITABILITY`, raise `MAX_ALLOWED_RISK_TIER`, disable `ENFORCE_DOMAIN_PREFILTER`, or soften any safety/critic rule.
-
----
-
-## 4. Setup and Installation
-
-### Dependencies
-This project uses a split dependency model to isolate formatting and report generation libraries (like ReportLab):
-* **Core dependencies:** Listed in `requirements.txt`.
-* **Development/Linting dependencies:** Listed in `requirements-dev.txt`.
-* **Report generation dependencies:** Listed in `requirements-report.txt`.
-
-### Installation
-Run the bootstrapper script to configure your environment:
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-### Environment Settings (`.env`)
-Create a `.env` file in the root directory (automatically copied from `.env.example` by `setup.sh`):
+The bootstrapper creates a virtual environment, installs dependencies, and creates `.env` from `.env.example` when present (otherwise it creates a blank local `.env`).
+
+### 2. Configure environment variables
+
+Create or update `.env` in the repository root:
+
 ```ini
 ACTIONABILITY_MODEL=deepseek/deepseek-r1
 CONDENSER_MODEL=deepseek/deepseek-r1
@@ -86,117 +74,118 @@ EMBED_API_KEY=your_key_here
 QDRANT_URL=http://localhost:6333
 QDRANT_API_KEY=
 
-# Optional Direct DeepSeek Routing (Bypasses OpenRouter for DeepSeek models)
+# Optional direct DeepSeek routing.
 DEEPSEEK_API_KEY=your_key_here
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_REASONER_MODEL=deepseek-reasoner
 ```
 
+Never commit real API keys or service credentials. Configuration is loaded through `config.py`, which redacts sensitive fields in text logs.
+
+### 3. Verify the project
+
+```bash
+.venv/bin/ruff check .
+.venv/bin/python -m pytest
+```
+
 ---
 
-## 5. Command Line Interface (CLI)
+## Command Line Usage
 
 The top-level execution point is `run.py`.
 
-### Connection Probe
-Verify Qdrant connection and inspect collections:
+### Probe Qdrant
+
 ```bash
 python run.py probe
 ```
 
-### Generate Protocols
-Assess and generate protocols from seeded Keystones:
+### Generate protocols
+
 ```bash
-# Process all candidates
 python run.py generate
-
-# Process up to 10 candidates
 python run.py generate --limit 10
-
-# Process in dry-run mode (no writes to Qdrant)
 python run.py generate --limit 10 --dry-run
-
-# Run for a specific Keystone ID
 python run.py generate --keystone-id <id>
-
-# Filter by minimum convergence
 python run.py generate --min-convergence 0.80
 ```
 
-### Classify Only
-Score/classify Keystones for actionability and suitability without generating drafts:
+### Classify candidates without writing protocols
+
 ```bash
 python run.py classify --limit 10 --dry-run
 ```
 
-### Log Observations
-Log an outcome observation against an active protocol:
+### Log and reflect on observations
+
 ```bash
 python run.py log-observation --protocol-id <id> --file path/to/observation.json
-```
-
-### Reflect on Observations
-Trigger LLM reflection on logged observations:
-```bash
 python run.py reflect --observation-id <id>
 ```
 
-### List and Inspect Items
-List items stored in Qdrant collections or show details:
+### List and inspect stored items
+
 ```bash
-# List generated protocols (with optional status filter)
 python run.py list protocols
 python run.py list protocols --status approved
-
-# List the Appendix A Refused/Non-Actionable Register
 python run.py list register
-
-# List qualitative reflections and feedback recommendations
 python run.py list feedback
-
-# Show full JSON payload of a specific protocol
 python run.py show protocol <protocol_id>
-
-# Show full JSON payload of a specific reflection
 python run.py show reflection <reflection_id>
 ```
 
-### Validate Payloads
-Validate a local JSON payload against Pydantic schemas:
+### Validate payloads
+
 ```bash
 python run.py validate protocol examples/protocol_example.json
 ```
 
-### Export Results
-Export collections to static JSON files:
+### Export collections
+
 ```bash
 python run.py export protocols --out data/protocols.json
 python run.py export observations --out data/observations.json
 python run.py export reflections --out data/reflections.json
 ```
 
-### Generate Report Book
-Compile HTML and PDF books summarizing the experimental program:
+### Build the report book
+
 ```bash
 python run.py report --out data/praxis_book.md --pdf --html
 ```
 
 ---
 
-## 6. Optional Direct DeepSeek Routing
-When `DEEPSEEK_API_KEY` is provided, Praxis will automatically route DeepSeek models (e.g. models matching `deepseek`) directly to the native DeepSeek API endpoint (`https://api.deepseek.com` by default) instead of routing them through OpenRouter. 
+## Data Collections
 
-During direct routing, the client automatically handles compatibility layers, including:
-* **Model ID translation:** Converts OpenRouter model names like `deepseek/deepseek-r1` or `deepseek/deepseek-chat` to native API identifiers like `deepseek-reasoner` or `deepseek-chat`.
-* **DeepSeek Contract Compliance:** Omits `temperature` parameter for `deepseek-reasoner` model requests, preventing native DeepSeek API schema validation errors.
+Praxis stores and reads several logical Qdrant collections:
+
+| Collection | Purpose |
+| --- | --- |
+| `keystones` | Input candidate propositions from the Meta-Bridge pipeline. |
+| `praxis_protocols` | Approved and active experimental practices. |
+| `praxis_observations` | Participant logs containing outcomes, durations, and adverse effects. |
+| `praxis_reflections` | Synthesised evaluations recommending repeats, adaptations, or halts. |
+| `praxis_failures` | Rejection register describing which candidates failed and why. |
 
 ---
 
-## 7. Data Collection Descriptions
+## Direct DeepSeek Routing
 
-Praxis manages data across several logical Qdrant collections:
-* **`keystones`**: The input candidate propositions from the Meta-Bridge pipeline.
-* **`praxis_protocols`**: Approved and active experimental practices.
-* **`praxis_observations`**: Participant logs containing execution outcomes, durations, and adverse effects.
-* **`praxis_reflections`**: Synthesized evaluations of observations, recommending repeats, adaptations, or halts.
-* **`praxis_failures`**: The rejection register detailing exactly which candidates failed at which stage.
+When `DEEPSEEK_API_KEY` is present, Praxis routes DeepSeek models directly to the native DeepSeek API endpoint instead of OpenRouter. The client translates OpenRouter-style model IDs such as `deepseek/deepseek-r1` to native identifiers such as `deepseek-reasoner` and omits incompatible request parameters for the reasoner model.
+
+---
+
+## Development Workflow
+
+Use the same checks locally that run in GitHub Actions:
+
+```bash
+.venv/bin/ruff check .
+.venv/bin/python -m pytest
+```
+
+Continuous integration is defined in `.github/workflows/ci.yml` and runs Ruff plus the full pytest suite on Python 3.11 and 3.12 for pushes, pull requests, and manual dispatches.
+
+When changing interfaces, command-line flags, environment variables, report formats, or safety behaviour, update this README and the relevant files in `docs/` in the same change. If a test fails because a candidate is unsafe, fix the mock candidate rather than loosening the safety gate. A low-yield run is exactly the chap we invited to tea.
